@@ -1,7 +1,8 @@
-<h1>Skillfactory project 1</h1> <br>
-<h2>0_project_1-миллионером</h2> <br>
+<h1>Skillfactory project 1</h1>
+<h2>0_project_1-миллионером</h2>
 <b>Задача проекта</b>
 Проанализировать датасет фильмов кинопроката за 2000-2015 годы, основываясь на 27 вопросах викторины.<br>
+<br>
 <details>
   <summary><b>Вопросы</b></summary>
   
