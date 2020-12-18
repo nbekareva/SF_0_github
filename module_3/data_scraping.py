@@ -5,7 +5,6 @@ import aiohttp
 
 
 urls = pd.read_csv('main_task.csv', usecols=['Restaurant_id', 'URL_TA'])
-urls = urls
 
 parsed_data = pd.DataFrame(columns=['Restaurant_id', 'Cuisine Style', 'Price Range', 'Number of Reviews'])
 
@@ -54,8 +53,8 @@ async def main(loop, start=0, end=urls.shape[0]):
         loop.create_task(parse_from_TA(idx, rest_id, url))    # all the tasks are scheduled at the moment but not all done
 
 
-for i in range(urls.shape[0] // 10000):    # processing only by 10000 tasks at a time, writing results in files
+for i in range(urls.shape[0]//10000):    # processing only by 10000 tasks at a time, writing results in files
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main(loop, start=i * 10000, end=(i+1) * 10000))
+    loop.run_until_complete(main(loop, start=i*10000, end=(i+1)*10000))
     loop.run_until_complete(asyncio.gather(*asyncio.all_tasks(loop=loop)))  # Wait for all tasks in the loop.
     parsed_data.to_csv(f'parsed_data_output{i}.csv')
