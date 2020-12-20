@@ -6,7 +6,7 @@ import aiohttp
 
 urls = pd.read_csv('main_task.csv', usecols=['Restaurant_id', 'URL_TA'])
 
-parsed_data = pd.DataFrame(columns=['Restaurant_id', 'Cuisine Style', 'Price Range', 'Number of Reviews'])
+parsed_data = pd.DataFrame(columns=['Restaurant_id', 'Cuisine Style', 'Price Range', 'Number of Reviews', 'URL_TA'])
 
 semaphore = asyncio.Queue(maxsize=1000)
 
@@ -37,8 +37,8 @@ async def parse_from_TA(idx, rest_id, url):
                 smart_strings=False)  # number of reviews
             current_num = int(current_num[0].replace(',', '')) if len(current_num) > 0 else None
 
-    parsed_data.loc[idx, ['Restaurant_id', 'Cuisine Style', 'Price Range', 'Number of Reviews']] = [
-        rest_id, current_cuisines or None, current_price_range, current_num
+    parsed_data.loc[idx, ['Restaurant_id', 'Cuisine Style', 'Price Range', 'Number of Reviews', 'URL_TA']] = [
+        rest_id, current_cuisines or None, current_price_range, current_num, url
     ]
     await semaphore.get()
 
