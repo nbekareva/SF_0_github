@@ -2,3 +2,5 @@
 .ipynb_checkpoints/
 module_3/output/
 module_3/00.py
+module_3/data_scraping_new.py
+module_3/pages_scraping.py
