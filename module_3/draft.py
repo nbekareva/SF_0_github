@@ -26,28 +26,54 @@ with open('currency_rates.json', 'w') as outfile:
 
 
 # cities info, taken from http://data.un.org/Data.aspx?d=POP&f=tableCode:240
-data = pd.read_csv('UNdata_Export.csv')
-data = data.drop(['Value Footnotes'], axis=1)
+# data = pd.read_csv('UNdata_Export.csv')
+# data = data.drop(['Value Footnotes'], axis=1)
+#
+# idx = data[data['Country or Area'] == 'footnoteSeqID'].index[0]
+# data = data.iloc[:idx]
+#
+# countries = {
+#     '2019': ['Austria', 'Luxembourg', 'Norway'],
+#     '2018': ['Denmark', 'Czechia', 'Germany', 'Hungary', 'Poland', 'Portugal', 'Slovakia', 'Slovenia', 'Spain'],
+#     '2017': ['Finland'],
+#     '2016': ['Ireland'],
+#     '2015': ['France'],
+#     '2012': ['Holy See'],
+#     '2011': ['Belgium', 'Greece', 'United Kingdom of Great Britain and Northern Ireland'],
+#     '2007': ['Sweden']
+# }
+#
+# for year, set_i in countries.items():
+#     for country in set_i:
+#         data = data[((data['Country or Area'] == country) & (data['Year'] == year)) | (data['Country or Area'] != country)]
+#
+# data.drop_duplicates(subset=['Country or Area', 'City', 'Sex'], inplace=True)
+# data.reset_index(drop=True, inplace=True)
+#
+# data.to_csv('UNdata_Export_new.csv', index=False)
 
-idx = data[data['Country or Area'] == 'footnoteSeqID'].index[0]
-data = data.iloc[:idx]
 
-countries = {
-    '2019': ['Austria', 'Luxembourg', 'Norway'],
-    '2018': ['Denmark', 'Czechia', 'Germany', 'Hungary', 'Poland', 'Portugal', 'Slovakia', 'Slovenia', 'Spain'],
-    '2017': ['Finland'],
-    '2016': ['Ireland'],
-    '2015': ['France'],
-    '2012': ['Holy See'],
-    '2011': ['Belgium', 'Greece', 'United Kingdom of Great Britain and Northern Ireland'],
-    '2007': ['Sweden']
-}
+# cities info, taken from https://help.opendatasoft.com/en/apis/
+def get_city_opendata(city, country):
+    tmp = 'https://public.opendatasoft.com/api/records/1.0/search/?dataset=worldcitiespop&q=%s&sort=population&facet=country&refine.country=%s'
+    cmd = tmp % (city, country)
+    resp = requests.get(cmd)
+    dct = resp.json()
+    return dct['records'][0]['fields']
 
-for year, set_i in countries.items():
-    for country in set_i:
-        data = data[((data['Country or Area'] == country) & (data['Year'] == year)) | (data['Country or Area'] != country)]
 
-data.drop_duplicates(subset=['Country or Area', 'City', 'Sex'], inplace=True)
-data.reset_index(drop=True, inplace=True)
+cities = pd.read_csv('main_task.csv', usecols=['City'], squeeze=True).unique()
 
-data.to_csv('UNdata_Export_new.csv', index=False)
+geo_codes = ['fr', 'se', 'gb', 'de', 'de', 'pt', 'it',
+             'sk', 'at', 'it', 'es', 'es', 'ie', 'be',
+             'ch', 'pl', 'hu', 'dk', 'nl', 'fr', 'de',
+             'pt', 'cz', 'no', 'fi', 'gb', 'ch', 'si',
+             'gr', 'lu', 'pl']
+
+cities_info = {}
+
+for idx, city in enumerate(cities):
+    cities_info[city] = get_city_opendata(city, geo_codes[idx])
+
+with open('city_data.json', 'w') as outfile:
+    json.dump(cities_info, outfile)
